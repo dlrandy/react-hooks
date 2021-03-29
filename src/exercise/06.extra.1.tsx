@@ -12,17 +12,26 @@ import type {PokemonData} from '../types'
 
 function PokemonInfo({pokemonName}: {pokemonName: string}) {
 
-  const [pokemon, setPokemon] = React.useState(null);
+  const [pokemon, setPokemon] = React.useState<PokemonData | null>(null);
+  const [error, setError] = React.useState<null | Error>(null);
 
   React.useEffect(() => {
     if(!pokemonName){
       return ;
     }
     setPokemon(null);
-    fetchPokemon(pokemonName).then(pokemon => setPokemon(pokemon))
-  }, [pokemonName])
+    setError(null);
 
-  if (!pokemonName) {
+    fetchPokemon(pokemonName).then(pokemon => setPokemon(pokemon), error => setError(error))
+  }, [pokemonName])
+  if (error) {
+    return (
+      <div role="alert">
+        There was an error:{' '}
+        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      </div>
+    )
+  } else if (!pokemonName) {
     return <span>Submit a pokemon</span>
   } else if (!pokemon) {
     return <PokemonInfoFallback name={pokemonName} />

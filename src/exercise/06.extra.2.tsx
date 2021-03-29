@@ -12,23 +12,43 @@ import type {PokemonData} from '../types'
 
 function PokemonInfo({pokemonName}: {pokemonName: string}) {
 
-  const [pokemon, setPokemon] = React.useState(null);
+  const [status, setStatus] = React.useState<string>('idle')
+  const [pokemon, setPokemon] = React.useState<PokemonData | null>(null);
+  const [error, setError] = React.useState<null | Error>(null);
 
   React.useEffect(() => {
     if(!pokemonName){
       return ;
     }
     setPokemon(null);
-    fetchPokemon(pokemonName).then(pokemon => setPokemon(pokemon))
+    setError(null);
+    setStatus('pending');
+
+    fetchPokemon(pokemonName).then(pokemon => {
+      setPokemon(pokemon);
+      setStatus('resolved');
+    }, error => {
+      setError(error)
+      setStatus('rejected')
+    })
   }, [pokemonName])
 
-  if (!pokemonName) {
+  if (status === 'rejected' && error != null) {
+    return (
+      <div role="alert">
+        There was an error:{' '}
+        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      </div>
+    )
+  } else if (status === 'idle') {
     return <span>Submit a pokemon</span>
-  } else if (!pokemon) {
+  } else if (status === 'pending') {
     return <PokemonInfoFallback name={pokemonName} />
-  } else {
+  } else if(status === 'resolved' && pokemon !== null) {
     return <PokemonDataView pokemon={pokemon} />
   }
+
+  throw new Error('this should be possible');
 }
 
 function App() {

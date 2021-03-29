@@ -3,9 +3,9 @@
 
 import * as React from 'react'
 
-function Greeting() {
+function Greeting({initialName = ''}:{initialName?: string}) {
   // 💣 delete this variable declaration and replace it with a React.useState call
-  const [name, setName] = React.useState('');
+  const [name, setName] = React.useState(initialName);
 
   function handleChange(event: React.SyntheticEvent<HTMLInputElement>) {
     setName(event.currentTarget.value);
@@ -23,7 +23,7 @@ function Greeting() {
 }
 
 function App() {
-  return <Greeting />
+  return <Greeting  initialName="kody" />
 }
 
 export default App

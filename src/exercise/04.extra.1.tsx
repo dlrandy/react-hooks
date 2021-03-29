@@ -3,7 +3,7 @@
 
 import * as React from 'react'
 import { 
-  calculateStatus,
+  calculateStatus, 
   calculateNextValue,
   calculateWinner,
 } from '../tic-tac-toe-utils'
@@ -12,7 +12,26 @@ import type {Squares} from '../tic-tac-toe-utils'
 function Board() {
   // 🐨 squares is the state for this component. Add useState for squares
   // const squares = Array(9).fill(null)
-   const [squares, setSquares] = React.useState<Squares>(() => Array(9).fill(null));
+   const [squares, setSquares] = React.useState<Squares>(() => {
+     let localStorageValue;
+     try {
+       localStorageValue = JSON.parse(window.localStorage.getItem('squares') ?? 'null')
+       
+     } catch (error: unknown) {
+       
+     }
+
+     if (localStorageValue) {
+       return localStorageValue;
+     } else {
+       return Array(9).fill(null);
+     }
+
+   });
+
+   React.useEffect(() => {
+     window.localStorage.setItem('squares', JSON.stringify(squares));
+   }, [squares])
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
   const nextValue = calculateNextValue(squares)
